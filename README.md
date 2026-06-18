@@ -22,10 +22,9 @@ entrega2/
 ```
 
 ## Compilación y ejecución
-```bash
-make        # compila con g++ C++17 -O2
-make run    # compila y ejecuta
-make clean  # limpia artefactos
+```bash (MINGW64)
+g++ -std=c++17 -O2 -o programa src/main.cpp src/GrafoDAG.cpp src/OperacionesCono.cpp src/Extraccion.cpp src/Instancia.cpp -Iinclude
+./programa
 ```
 
 ## Correspondencia pseudocódigo ↔ implementación
