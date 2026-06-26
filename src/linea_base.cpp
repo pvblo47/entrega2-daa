@@ -182,10 +182,13 @@ Metricas Extraccion_Linea_Base(ModeloBloques& modelo)
                         salir_xyz       = true;   // reiniciar escaneo
 
                     } else if (valor_cono == 0.0) {
+                        std::cout << "[ALERTA Linea Base] Cono con valor exactamente 0 en coord (" 
+                                  << x << "," << y << "," << z << ") con tamaño " << cono_candidato.size() << "\n";
                         Registrar_En_Log(x, y, z,
                                          static_cast<int>(cono_candidato.size()),
                                          valor_cono, metricas);
                     }
+
                 }
             }
         }

@@ -5,6 +5,12 @@
 #include <sstream>
 #include <fstream>
 
+#if defined(_WIN32)
+#include <windows.h>
+#include <psapi.h>
+#endif
+
+
 // ---------------------------------------------------------------------------
 // generarInstanciaEjemplo: modelo 5x5x3 descrito en Seccion 2.5.1
 // ---------------------------------------------------------------------------
@@ -99,15 +105,60 @@ long obtenerRAM_KB() {
 #if defined(__linux__)
     std::ifstream status("/proc/self/status");
     std::string linea;
+    long hwm = -1;
+    long rss = -1;
     while (std::getline(status, linea)) {
-        if (linea.rfind("VmRSS:", 0) == 0) {
+        if (linea.rfind("VmHWM:", 0) == 0) {
             std::istringstream ss(linea);
             std::string clave;
-            long valor;
-            ss >> clave >> valor;
-            return valor;
+            ss >> clave >> hwm;
+        } else if (linea.rfind("VmRSS:", 0) == 0) {
+            std::istringstream ss(linea);
+            std::string clave;
+            ss >> clave >> rss;
         }
+    }
+    if (hwm != -1) return hwm;
+    if (rss != -1) return rss;
+#elif defined(_WIN32)
+    PROCESS_MEMORY_COUNTERS pmc;
+    if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
+        return pmc.PeakWorkingSetSize / 1024;
     }
 #endif
     return -1;
 }
+
+// ---------------------------------------------------------------------------
+// generarInstanciaLeyVariable
+// ---------------------------------------------------------------------------
+std::vector<std::vector<std::vector<double>>> generarInstanciaLeyVariable(
+    int X, int Y, int Z, unsigned int semilla)
+{
+    std::mt19937 rng(semilla);
+    std::uniform_real_distribution<double> distPos(10.0, 150.0);
+    std::uniform_real_distribution<double> distNeg(-50.0, -1.0);
+    std::uniform_real_distribution<double> distProb(0.0, 1.0);
+
+    std::vector<std::vector<std::vector<double>>> mat(
+        X, std::vector<std::vector<double>>(
+            Y, std::vector<double>(Z, 0.0)));
+
+    for (int x = 0; x < X; ++x) {
+        for (int y = 0; y < Y; ++y) {
+            for (int z = 0; z < Z; ++z) {
+                // z=0 es profundo, z=Z-1 es superficie.
+                // Mayor probabilidad de mineral en el fondo
+                double probPositivo = 0.7 - 0.5 * (static_cast<double>(z) / Z);
+                if (distProb(rng) < probPositivo) {
+                    mat[x][y][z] = distPos(rng);
+                } else {
+                    mat[x][y][z] = distNeg(rng);
+                }
+            }
+        }
+    }
+
+    return mat;
+}
+

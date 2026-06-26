@@ -77,7 +77,10 @@ struct MetricasDAG {
     long long actualizacionesDinam  = 0;   // bloques actualizados por propagación
     long long conosCeroReportados   = 0;
     std::string politica;
+    double    tiempoConstruirDAGMs  = 0.0;
+    double    tiempoActualizarDescMs= 0.0;
 };
+
 
 // ─────────────────────────────────────────────
 //  Declaraciones de funciones auxiliares DAG

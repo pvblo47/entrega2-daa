@@ -15,6 +15,8 @@
 #include <iomanip>
 #include <unordered_set>
 #include <stack>
+#include <chrono>
+
 
 // ─────────────────────────────────────────────
 //  Construir_DAG_Precedencias
@@ -174,14 +176,20 @@ void Preprocesar_Conos(GrafoDAG& dag,
 
         if (b.estatus_borde_valido) {
             std::vector<NodoDAG*> cono = Calcular_Cierre_Cono(&b, dag);
-            Valores_Conos [b.id] = Sumar_Valores_Economicos(cono);
+            double val = Sumar_Valores_Economicos(cono);
+            Valores_Conos [b.id] = val;
             Tamanios_Conos[b.id] = static_cast<int>(cono.size());
+            if (val == 0.0) {
+                std::cout << "[ALERTA DAG Preproceso] Cono con valor exactamente 0 en bloque id " << b.id 
+                          << " (" << b.x << "," << b.y << "," << b.z << ")\n";
+            }
         } else {
             // Bloque de borde: marcado como -INFINITO para nunca ser seleccionado
             Valores_Conos [b.id] = NEG_INF;
             Tamanios_Conos[b.id] = 1;
         }
     }
+
 }
 
 // ─────────────────────────────────────────────
@@ -216,10 +224,16 @@ void Actualizar_Descendientes_Dinamico(const std::vector<NodoDAG*>& cono_extraid
     // Recalcular solo los bloques afectados
     for (NodoDAG* b : afectados) {
         std::vector<NodoDAG*> nuevo_cono = Calcular_Cierre_Cono(b, dag);
-        Valores_Conos [b->id] = Sumar_Valores_Economicos(nuevo_cono);
+        double val = Sumar_Valores_Economicos(nuevo_cono);
+        Valores_Conos [b->id] = val;
         Tamanios_Conos[b->id] = static_cast<int>(nuevo_cono.size());
         metricas.actualizacionesDinam++;
+        if (val == 0.0) {
+            std::cout << "[ALERTA DAG Dinamico] Cono con valor exactamente 0 en bloque id " << b->id 
+                      << " (" << b->x << "," << b->y << "," << b->z << ")\n";
+        }
     }
+
 }
 
 // ─────────────────────────────────────────────
@@ -238,7 +252,11 @@ MetricasDAG Extraccion_DAG(ModeloBloques& modelo,
     ConjBloques bloques_extraidos_totales;
 
     // ── Transformación de la matriz en estructura de nodos (grafo DAG) ──
+    auto t_start_dag = std::chrono::high_resolution_clock::now();
     GrafoDAG Grafo_DAG = Construir_DAG_Precedencias(modelo);
+    auto t_end_dag = std::chrono::high_resolution_clock::now();
+    metricas.tiempoConstruirDAGMs = std::chrono::duration<double, std::milli>(t_end_dag - t_start_dag).count();
+
 
     // ── Extracción de lista de punteros a bloques activos ──
     //    Yacimiento_Remanente ← Obtener_Nodos_Activos(Grafo_DAG)
@@ -311,11 +329,15 @@ MetricasDAG Extraccion_DAG(ModeloBloques& modelo,
             metricas.conosExtraidos++;
 
             // ── Actualización dinámica acotada ──
+            auto t_start_act = std::chrono::high_resolution_clock::now();
             Actualizar_Descendientes_Dinamico(
                 Cono_A_Extraer, Grafo_DAG,
                 Valores_Conos, Tamanios_Conos, metricas);
+            auto t_end_act = std::chrono::high_resolution_clock::now();
+            metricas.tiempoActualizarDescMs += std::chrono::duration<double, std::milli>(t_end_act - t_start_act).count();
         }
     }   // fin MIENTRAS
+
 
     metricas.beneficioTotal   = beneficio_total;
     metricas.bloquesExtraidos = static_cast<long long>(bloques_extraidos_totales.size());
