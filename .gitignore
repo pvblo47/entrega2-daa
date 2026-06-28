@@ -1,0 +1,9 @@
+programa
+programa.exe
+programa_debug
+programa_debug.exe
+suite
+suite.exe
+resultados_pruebas.txt
+build/
+*.o
