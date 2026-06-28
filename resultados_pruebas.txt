@@ -12,18 +12,18 @@
 ----------------------------------------------------------------------------------------------------------------------
   Algoritmo                         Beneficio   Bloques Ext.       T. Total  Peak RAM (Antes->Desp)    Iteraciones
 ----------------------------------------------------------------------------------------------------------------------
-  First-Fit (L. Base)                 5331.14            197         0.32 ms         3996 -> 4064 KB             37
-  Max-Value (DAG)                     8572.55            244         1.22 ms         4064 -> 4172 KB             48
-  Razon (DAG)                        10375.45            243         1.45 ms         4172 -> 4204 KB             81
+  First-Fit (L. Base)                 5331.14            197         0.28 ms         5976 -> 6016 KB             37
+  Max-Value (DAG)                     8572.55            244         1.00 ms         6016 -> 6092 KB             48
+  Razon (DAG)                        10375.45            243         1.23 ms         6092 -> 6112 KB             81
 ----------------------------------------------------------------------------------------------------------------------
   DETALLE INTERNO SUBRUTINAS DAG:
     * Max-Value:
-      - Construir_DAG_Precedencias   : 0.1435 ms
-      - Actualizar_Descendientes_Dinam: 0.3989 ms
+      - Construir_DAG_Precedencias   : 0.1255 ms
+      - Actualizar_Descendientes_Dinam: 0.3642 ms
       - Conos evaluados con valor 0  : 0
     * Razon:
-      - Construir_DAG_Precedencias   : 0.1362 ms
-      - Actualizar_Descendientes_Dinam: 0.6697 ms
+      - Construir_DAG_Precedencias   : 0.1409 ms
+      - Actualizar_Descendientes_Dinam: 0.5833 ms
       - Conos evaluados con valor 0  : 0
 ================================================================================
 
@@ -37,18 +37,18 @@
 ----------------------------------------------------------------------------------------------------------------------
   Algoritmo                         Beneficio   Bloques Ext.       T. Total  Peak RAM (Antes->Desp)    Iteraciones
 ----------------------------------------------------------------------------------------------------------------------
-  First-Fit (L. Base)                69155.75           2237        14.81 ms         4208 -> 4488 KB            584
-  Max-Value (DAG)                    98356.99           2345        15.18 ms         4488 -> 5352 KB            546
-  Razon (DAG)                       109723.45           2345        22.50 ms         5352 -> 5464 KB            945
+  First-Fit (L. Base)                69155.75           2237        12.66 ms         6184 -> 6320 KB            584
+  Max-Value (DAG)                    98356.99           2345        10.53 ms         6320 -> 6848 KB            546
+  Razon (DAG)                       109723.45           2345        16.33 ms         6848 -> 6996 KB            945
 ----------------------------------------------------------------------------------------------------------------------
   DETALLE INTERNO SUBRUTINAS DAG:
     * Max-Value:
-      - Construir_DAG_Precedencias   : 1.3860 ms
-      - Actualizar_Descendientes_Dinam: 4.6198 ms
+      - Construir_DAG_Precedencias   : 1.0159 ms
+      - Actualizar_Descendientes_Dinam: 3.4365 ms
       - Conos evaluados con valor 0  : 0
     * Razon:
-      - Construir_DAG_Precedencias   : 1.2309 ms
-      - Actualizar_Descendientes_Dinam: 9.7156 ms
+      - Construir_DAG_Precedencias   : 0.9965 ms
+      - Actualizar_Descendientes_Dinam: 7.1940 ms
       - Conos evaluados con valor 0  : 0
 ================================================================================
 
@@ -62,18 +62,18 @@
 ----------------------------------------------------------------------------------------------------------------------
   Algoritmo                         Beneficio   Bloques Ext.       T. Total  Peak RAM (Antes->Desp)    Iteraciones
 ----------------------------------------------------------------------------------------------------------------------
-  First-Fit (L. Base)               210201.02           6584       122.90 ms         5464 -> 5464 KB           1835
-  Max-Value (DAG)                   289796.24           6597        64.25 ms         5464 -> 7680 KB           1614
-  Razon (DAG)                       321870.00           6588       104.34 ms         7680 -> 7960 KB           2728
+  First-Fit (L. Base)               210201.02           6584       106.43 ms         6996 -> 6996 KB           1835
+  Max-Value (DAG)                   289796.24           6597        59.86 ms         6996 -> 8288 KB           1614
+  Razon (DAG)                       321870.00           6588        81.34 ms         8288 -> 8468 KB           2728
 ----------------------------------------------------------------------------------------------------------------------
   DETALLE INTERNO SUBRUTINAS DAG:
     * Max-Value:
-      - Construir_DAG_Precedencias   : 3.4902 ms
-      - Actualizar_Descendientes_Dinam: 13.5706 ms
+      - Construir_DAG_Precedencias   : 3.7617 ms
+      - Actualizar_Descendientes_Dinam: 16.3821 ms
       - Conos evaluados con valor 0  : 0
     * Razon:
-      - Construir_DAG_Precedencias   : 3.3613 ms
-      - Actualizar_Descendientes_Dinam: 27.2527 ms
+      - Construir_DAG_Precedencias   : 4.4424 ms
+      - Actualizar_Descendientes_Dinam: 25.0963 ms
       - Conos evaluados con valor 0  : 0
 ================================================================================
 
