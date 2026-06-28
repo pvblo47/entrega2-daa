@@ -23,8 +23,9 @@ entrega2/
 
 ## Compilación y ejecución
 ```bash (MINGW64)
-g++ -std=c++17 -O2 -o programa src/main.cpp src/GrafoDAG.cpp src/OperacionesCono.cpp src/Extraccion.cpp src/Instancia.cpp -Iinclude
-./programa
+g++ -std=c++17 -o suite.exe src/main.cpp src/GrafoDAG.cpp src/OperacionesCono.cpp src/Extraccion.cpp src/Instancia.cpp src/linea_base.cpp -Iinclude
+./suite.exe
+
 ```
 
 ## Correspondencia pseudocódigo ↔ implementación
