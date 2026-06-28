@@ -27,11 +27,3 @@ g++ -std=c++17 -o suite.exe src/main.cpp src/GrafoDAG.cpp src/OperacionesCono.cp
 ./suite.exe
 
 ```
-
-## Correspondencia pseudocódigo ↔ implementación
-| Pseudocódigo (Sección)          | Archivo implementación             |
-|---------------------------------|------------------------------------|
-| Construir_DAG_Precedencias 2.4.2 | `src/GrafoDAG.cpp`                |
-| Calcular_Cierre_Cono 2.4.3      | `src/OperacionesCono.cpp`         |
-| Actualizar_Descendientes 2.4.4  | `src/OperacionesCono.cpp`         |
-| Extraccion_Optimizada_DAG 2.4.1 | `src/Extraccion.cpp`              |
