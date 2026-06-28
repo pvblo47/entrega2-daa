@@ -16,11 +16,8 @@ std::vector<std::vector<std::vector<double>>> generarInstanciaAleatoria(
     unsigned int semilla = 42
 );
 
-// Genera una instancia sintetica con ley mineral variable y concentrados al fondo, sin padding ni bloques ficticios
-std::vector<std::vector<std::vector<double>>> generarInstanciaLeyVariable(
-    int X, int Y, int Z,
-    unsigned int semilla = 42
-);
+// Instancia determinista identica a la linea base (crearInstanciaEscalable)
+std::vector<std::vector<std::vector<double>>> generarInstanciaEscalable(int X, int Y, int Z);
 
 // Imprime en stdout el resumen de un resultado de extraccion
 void imprimirResultado(
