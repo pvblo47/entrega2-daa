@@ -11,7 +11,7 @@ enum class TipoPolitica {
 };
 
 // Resultado devuelto por el algoritmo principal
-struct ResultadoExtraccion {
+struct ResultadoExtraccionDAG {
     double beneficioTotal;
     std::vector<int> bloquesExtraidos;   // ids de todos los bloques removidos
     int iteraciones;                     // cantidad de conos extraidos
@@ -19,7 +19,7 @@ struct ResultadoExtraccion {
 };
 
 // Algoritmo principal: Extraccion_Optimizada_DAG (Seccion 2.4.1)
-ResultadoExtraccion extraccionOptimizadaDAG(GrafoDAG& grafo, TipoPolitica politica);
+ResultadoExtraccionDAG extraccionOptimizadaDAG(GrafoDAG& grafo, TipoPolitica politica);
 
 // Convierte el enum a string legible
 std::string politicaToString(TipoPolitica p);

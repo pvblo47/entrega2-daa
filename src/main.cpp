@@ -62,14 +62,14 @@ static void ejecutarEscala(
     // ── 2. DAG Max-Value ───────────────────────────────────────────────────
     GrafoDAG grafoMV(X, Y, Z, mat);
     t0 = std::chrono::high_resolution_clock::now();
-    ResultadoExtraccion resMV = extraccionOptimizadaDAG(grafoMV, TipoPolitica::MAX_VALUE);
+    ResultadoExtraccionDAG resMV = extraccionOptimizadaDAG(grafoMV, TipoPolitica::MAX_VALUE);
     t1 = std::chrono::high_resolution_clock::now();
     double msMV = std::chrono::duration<double, std::milli>(t1 - t0).count();
  
     // ── 3. DAG Razon ───────────────────────────────────────────────────────
     GrafoDAG grafoRZ(X, Y, Z, mat);
     t0 = std::chrono::high_resolution_clock::now();
-    ResultadoExtraccion resRZ = extraccionOptimizadaDAG(grafoRZ, TipoPolitica::RAZON_VALOR_TAMANO);
+    ResultadoExtraccionDAG resRZ = extraccionOptimizadaDAG(grafoRZ, TipoPolitica::RAZON_VALOR_TAMANO);
     t1 = std::chrono::high_resolution_clock::now();
     double msRZ = std::chrono::duration<double, std::milli>(t1 - t0).count();
  

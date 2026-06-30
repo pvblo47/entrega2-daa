@@ -17,9 +17,9 @@ std::string politicaToString(TipoPolitica p) {
 // ---------------------------------------------------------------------------
 // extraccionOptimizadaDAG: Algoritmo Principal (Seccion 2.4.1)
 // ---------------------------------------------------------------------------
-ResultadoExtraccion extraccionOptimizadaDAG(GrafoDAG& grafo, TipoPolitica politica) {
+ResultadoExtraccionDAG extraccionOptimizadaDAG(GrafoDAG& grafo, TipoPolitica politica) {
 
-    ResultadoExtraccion resultado;
+    ResultadoExtraccionDAG resultado;
     resultado.beneficioTotal  = 0.0;
     resultado.iteraciones     = 0;
     resultado.casosConosCero  = 0;
