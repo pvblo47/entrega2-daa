@@ -27,7 +27,7 @@ static ModeloBloques crearModelo(int X, int Y, int Z,
 }
  
 static void separador(std::ostream& out) {
-    out << "--------------------------------------------------------------------------------\n";
+    out << "----------------------------------------------------------------------------------------------------\n";
 }
  
 static void ejecutarEscala(
@@ -39,39 +39,58 @@ static void ejecutarEscala(
     if (archivo.is_open()) salidas.push_back(&archivo);
  
     for (auto* out : salidas) {
-        *out << "\n================================================================================\n";
+        *out << "\n====================================================================================================\n";
         *out << "  " << nombre << " (" << X << "x" << Y << "x" << Z
              << " = " << X*Y*Z << " bloques)\n";
-        *out << "================================================================================\n";
+        *out << "====================================================================================================\n";
         *out << std::left  << std::setw(32) << "  Algoritmo"
              << std::right << std::setw(14) << "Beneficio"
              << std::setw(14) << "Bloques Ext."
              << std::setw(12) << "Tiempo(ms)"
-             << std::setw(14) << "Iteraciones" << "\n";
+             << std::setw(14) << "Iteraciones"
+             << std::setw(14) << "RAM (KB)" << "\n";
         separador(*out);
     }
  
     // ── 1. First-Fit (Linea Base original) ────────────────────────────────
-    auto modeloLB = crearModelo(X, Y, Z, mat);
-    ExtractorConos extractor;
-    auto t0 = std::chrono::high_resolution_clock::now();
-    ResultadoExtraccion resLB = extractor.extraccionLineaBase(modeloLB);
-    auto t1 = std::chrono::high_resolution_clock::now();
-    double msLB = std::chrono::duration<double, std::milli>(t1 - t0).count();
+    double msLB = 0;
+    ResultadoExtraccion resLB;
+    long ramLB = 0;
+    {
+        auto modeloLB = crearModelo(X, Y, Z, mat);
+        ExtractorConos extractor;
+        auto t0 = std::chrono::high_resolution_clock::now();
+        resLB = extractor.extraccionLineaBase(modeloLB);
+        auto t1 = std::chrono::high_resolution_clock::now();
+        msLB = std::chrono::duration<double, std::milli>(t1 - t0).count();
+        ramLB = obtenerRAM_KB();
+    }
  
     // ── 2. DAG Max-Value ───────────────────────────────────────────────────
-    GrafoDAG grafoMV(X, Y, Z, mat);
-    t0 = std::chrono::high_resolution_clock::now();
-    ResultadoExtraccionDAG resMV = extraccionOptimizadaDAG(grafoMV, TipoPolitica::MAX_VALUE);
-    t1 = std::chrono::high_resolution_clock::now();
-    double msMV = std::chrono::duration<double, std::milli>(t1 - t0).count();
+    double msMV = 0;
+    ResultadoExtraccionDAG resMV;
+    long ramMV = 0;
+    {
+        GrafoDAG grafoMV(X, Y, Z, mat);
+        auto t0 = std::chrono::high_resolution_clock::now();
+        resMV = extraccionOptimizadaDAG(grafoMV, TipoPolitica::MAX_VALUE);
+        auto t1 = std::chrono::high_resolution_clock::now();
+        msMV = std::chrono::duration<double, std::milli>(t1 - t0).count();
+        ramMV = obtenerRAM_KB();
+    }
  
     // ── 3. DAG Razon ───────────────────────────────────────────────────────
-    GrafoDAG grafoRZ(X, Y, Z, mat);
-    t0 = std::chrono::high_resolution_clock::now();
-    ResultadoExtraccionDAG resRZ = extraccionOptimizadaDAG(grafoRZ, TipoPolitica::RAZON_VALOR_TAMANO);
-    t1 = std::chrono::high_resolution_clock::now();
-    double msRZ = std::chrono::duration<double, std::milli>(t1 - t0).count();
+    double msRZ = 0;
+    ResultadoExtraccionDAG resRZ;
+    long ramRZ = 0;
+    {
+        GrafoDAG grafoRZ(X, Y, Z, mat);
+        auto t0 = std::chrono::high_resolution_clock::now();
+        resRZ = extraccionOptimizadaDAG(grafoRZ, TipoPolitica::RAZON_VALOR_TAMANO);
+        auto t1 = std::chrono::high_resolution_clock::now();
+        msRZ = std::chrono::duration<double, std::milli>(t1 - t0).count();
+        ramRZ = obtenerRAM_KB();
+    }
  
     // ── Imprimir resultados ────────────────────────────────────────────────
     for (auto* out : salidas) {
@@ -81,19 +100,22 @@ static void ejecutarEscala(
              << std::right << std::setw(14) << resLB.beneficio_total
              << std::setw(14) << resLB.bloques_extraidos.size()
              << std::setw(12) << msLB
-             << std::setw(14) << "—" << "\n";
+             << std::setw(14) << "—"
+             << std::setw(14) << (ramLB >= 0 ? std::to_string(ramLB) : "N/D") << "\n";
  
         *out << std::left  << std::setw(32) << "  Max-Value (DAG)"
              << std::right << std::setw(14) << resMV.beneficioTotal
              << std::setw(14) << (int)resMV.bloquesExtraidos.size()
              << std::setw(12) << msMV
-             << std::setw(14) << resMV.iteraciones << "\n";
+             << std::setw(14) << resMV.iteraciones
+             << std::setw(14) << (ramMV >= 0 ? std::to_string(ramMV) : "N/D") << "\n";
  
         *out << std::left  << std::setw(32) << "  Razon Valor/Tamano (DAG)"
              << std::right << std::setw(14) << resRZ.beneficioTotal
              << std::setw(14) << (int)resRZ.bloquesExtraidos.size()
              << std::setw(12) << msRZ
-             << std::setw(14) << resRZ.iteraciones << "\n";
+             << std::setw(14) << resRZ.iteraciones
+             << std::setw(14) << (ramRZ >= 0 ? std::to_string(ramRZ) : "N/D") << "\n";
  
         separador(*out);
     }
@@ -106,10 +128,10 @@ int main() {
     if (archivo.is_open()) salidas.push_back(&archivo);
  
     for (auto* out : salidas) {
-        *out << "================================================================================\n";
+        *out << "====================================================================================================\n";
         *out << "  SUITE DE PRUEBAS - Grupo 01: Bezares / Briones / Bravo\n";
         *out << "  Instancia: generarInstanciaEscalable (determinista)\n";
-        *out << "================================================================================\n";
+        *out << "====================================================================================================\n";
     }
  
     struct Escala { int X, Y, Z; const char* nombre; };
@@ -126,7 +148,7 @@ int main() {
  
     for (auto* out : salidas) {
         *out << "\n  Resultados exportados a: resultados_pruebas.txt\n";
-        *out << "================================================================================\n";
+        *out << "====================================================================================================\n";
     }
  
     if (archivo.is_open()) archivo.close();

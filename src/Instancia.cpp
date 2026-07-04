@@ -5,6 +5,11 @@
 #include <sstream>
 #include <fstream>
 
+#ifdef _WIN32
+#include <windows.h>
+#include <psapi.h>
+#endif
+
 // ---------------------------------------------------------------------------
 // generarInstanciaEjemplo: modelo 5x5x3 descrito en Seccion 2.5.1
 // ---------------------------------------------------------------------------
@@ -107,6 +112,11 @@ long obtenerRAM_KB() {
             ss >> clave >> valor;
             return valor;
         }
+    }
+#elif defined(_WIN32)
+    PROCESS_MEMORY_COUNTERS pmc;
+    if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
+        return pmc.WorkingSetSize / 1024;
     }
 #endif
     return -1;
