@@ -12,6 +12,8 @@ struct ResultadoExtraccion {
     double tiempo_ms;                        // Latencia total en milisegundos
 };
 
+#include <chrono>
+
 // Clase que encapsula el algoritmo de extraccion y construccion de conos.
 class ExtractorConos {
 public:
@@ -19,6 +21,9 @@ public:
     ResultadoExtraccion extraccionLineaBase(ModeloBloques& modelo);
 
 private:
+    std::chrono::high_resolution_clock::time_point tiempo_inicio_;
+    uint64_t total_llamadas_recursivas_ = 0;
+
     // Reconstruye el cono invertido de un bloque objetivo de forma recursiva.
     ResultadoCono reconstruirConoRecursivo(
         int32_t x, int32_t y, int32_t z,

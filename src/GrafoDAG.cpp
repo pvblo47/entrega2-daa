@@ -1,11 +1,12 @@
 #include "GrafoDAG.h"
 #include <stdexcept>
+#include <iostream>
 
 // ---------------------------------------------------------------------------
 // Constructor: Construir_DAG_Precedencias (Pseudocodigo Seccion 2.4.2)
 // ---------------------------------------------------------------------------
 GrafoDAG::GrafoDAG(int X, int Y, int Z,
-                   const std::vector<std::vector<std::vector<double>>>& matrizValores)
+                   const std::vector<std::vector<std::vector<BloqueDatos>>>& matrizValores)
     : _X(X), _Y(Y), _Z(Z)
 {
     const int total = X * Y * Z;
@@ -23,10 +24,17 @@ GrafoDAG::GrafoDAG(int X, int Y, int Z,
                 b.x             = x;
                 b.y             = y;
                 b.z             = z;
-                b.valor         = matrizValores[x][y][z];
                 b.activo        = true;
                 b.reportadoCero = false;
                 b.estatusBorde  = EstatusBorde::VALIDO;
+
+                // Copiar las nuevas variables e inicializar valor (Requisitos 2, 3, 4)
+                b.tonelada      = matrizValores[x][y][z].tonelada;
+                b.metal1        = matrizValores[x][y][z].metal1;
+                b.metal2        = matrizValores[x][y][z].metal2;
+                b.roca          = matrizValores[x][y][z].roca;
+                b.valorBloque   = matrizValores[x][y][z].valorBloque;
+                b.valor         = b.valorBloque;
 
                 _nodos[contadorId] = b;
                 ++contadorId;
@@ -69,10 +77,16 @@ GrafoDAG::GrafoDAG(int X, int Y, int Z,
 // ---------------------------------------------------------------------------
 
 Bloque& GrafoDAG::obtenerNodo(int id) {
+    if (id < 0 || id >= (int)_nodos.size()) {
+        std::cerr << "ERROR: GrafoDAG::obtenerNodo out of bounds. id = " << id << ", size = " << _nodos.size() << "\n";
+    }
     return _nodos[id];
 }
 
 const Bloque& GrafoDAG::obtenerNodo(int id) const {
+    if (id < 0 || id >= (int)_nodos.size()) {
+        std::cerr << "ERROR: GrafoDAG::obtenerNodo const out of bounds. id = " << id << ", size = " << _nodos.size() << "\n";
+    }
     return _nodos[id];
 }
 

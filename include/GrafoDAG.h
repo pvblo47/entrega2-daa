@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Bloque.h"
+#include "Instancia.h"
 #include <vector>
 
 // Grafo Dirigido Aciclico (DAG) de precedencias para el yacimiento 3D.
@@ -12,7 +13,7 @@
 class GrafoDAG {
 public:
     // Construye el grafo a partir de la matriz tridimensional de valores
-    GrafoDAG(int X, int Y, int Z, const std::vector<std::vector<std::vector<double>>>& matrizValores);
+    GrafoDAG(int X, int Y, int Z, const std::vector<std::vector<std::vector<BloqueDatos>>>& matrizValores);
 
     // Devuelve referencia al nodo por id
     Bloque& obtenerNodo(int id);

@@ -16,13 +16,13 @@
  
 // Convierte matriz 3D a ModeloBloques usando setValor()
 static ModeloBloques crearModelo(int X, int Y, int Z,
-    const std::vector<std::vector<std::vector<double>>>& mat)
+    const std::vector<std::vector<std::vector<BloqueDatos>>>& mat)
 {
     ModeloBloques m(X, Y, Z);
     for (int x = 0; x < X; ++x)
         for (int y = 0; y < Y; ++y)
             for (int z = 0; z < Z; ++z)
-                m.setValor(x, y, z, mat[x][y][z]);
+                m.setValor(x, y, z, mat[x][y][z].valorBloque);
     return m;
 }
  
@@ -32,7 +32,7 @@ static void separador(std::ostream& out) {
  
 static void ejecutarEscala(
     const std::string& nombre, int X, int Y, int Z,
-    const std::vector<std::vector<std::vector<double>>>& mat,
+    const std::vector<std::vector<std::vector<BloqueDatos>>>& mat,
     std::ofstream& archivo)
 {
     std::vector<std::ostream*> salidas = {&std::cout};
@@ -56,7 +56,8 @@ static void ejecutarEscala(
     double msLB = 0;
     ResultadoExtraccion resLB;
     long ramLB = 0;
-    {
+    bool timeoutLB = false;
+    try {
         auto modeloLB = crearModelo(X, Y, Z, mat);
         ExtractorConos extractor;
         auto t0 = std::chrono::high_resolution_clock::now();
@@ -64,58 +65,105 @@ static void ejecutarEscala(
         auto t1 = std::chrono::high_resolution_clock::now();
         msLB = std::chrono::duration<double, std::milli>(t1 - t0).count();
         ramLB = obtenerRAM_KB();
+    } catch (const std::runtime_error& e) {
+        if (std::string(e.what()) == "Timeout") {
+            timeoutLB = true;
+        } else {
+            throw;
+        }
     }
  
     // ── 2. DAG Max-Value ───────────────────────────────────────────────────
     double msMV = 0;
     ResultadoExtraccionDAG resMV;
     long ramMV = 0;
-    {
+    bool timeoutMV = false;
+    try {
         GrafoDAG grafoMV(X, Y, Z, mat);
         auto t0 = std::chrono::high_resolution_clock::now();
         resMV = extraccionOptimizadaDAG(grafoMV, TipoPolitica::MAX_VALUE);
         auto t1 = std::chrono::high_resolution_clock::now();
         msMV = std::chrono::duration<double, std::milli>(t1 - t0).count();
         ramMV = obtenerRAM_KB();
+    } catch (const std::runtime_error& e) {
+        if (std::string(e.what()) == "Timeout") {
+            timeoutMV = true;
+        } else {
+            throw;
+        }
     }
  
     // ── 3. DAG Razon ───────────────────────────────────────────────────────
     double msRZ = 0;
     ResultadoExtraccionDAG resRZ;
     long ramRZ = 0;
-    {
+    bool timeoutRZ = false;
+    try {
         GrafoDAG grafoRZ(X, Y, Z, mat);
         auto t0 = std::chrono::high_resolution_clock::now();
         resRZ = extraccionOptimizadaDAG(grafoRZ, TipoPolitica::RAZON_VALOR_TAMANO);
         auto t1 = std::chrono::high_resolution_clock::now();
         msRZ = std::chrono::duration<double, std::milli>(t1 - t0).count();
         ramRZ = obtenerRAM_KB();
+    } catch (const std::runtime_error& e) {
+        if (std::string(e.what()) == "Timeout") {
+            timeoutRZ = true;
+        } else {
+            throw;
+        }
     }
  
     // ── Imprimir resultados ────────────────────────────────────────────────
     for (auto* out : salidas) {
         *out << std::fixed << std::setprecision(2);
  
-        *out << std::left  << std::setw(32) << "  First-Fit (Linea Base)"
-             << std::right << std::setw(14) << resLB.beneficio_total
-             << std::setw(14) << resLB.bloques_extraidos.size()
-             << std::setw(12) << msLB
-             << std::setw(14) << "—"
-             << std::setw(14) << (ramLB >= 0 ? std::to_string(ramLB) : "N/D") << "\n";
+        if (timeoutLB) {
+            *out << std::left  << std::setw(32) << "  First-Fit (Linea Base)"
+                 << std::right << std::setw(14) << "TIMEOUT"
+                 << std::setw(14) << "TIMEOUT"
+                 << std::setw(12) << ">1800000"
+                 << std::setw(14) << "—"
+                 << std::setw(14) << "N/D" << "\n";
+        } else {
+            *out << std::left  << std::setw(32) << "  First-Fit (Linea Base)"
+                 << std::right << std::setw(14) << resLB.beneficio_total
+                 << std::setw(14) << resLB.bloques_extraidos.size()
+                 << std::setw(12) << msLB
+                 << std::setw(14) << "—"
+                 << std::setw(14) << (ramLB >= 0 ? std::to_string(ramLB) : "N/D") << "\n";
+        }
  
-        *out << std::left  << std::setw(32) << "  Max-Value (DAG)"
-             << std::right << std::setw(14) << resMV.beneficioTotal
-             << std::setw(14) << (int)resMV.bloquesExtraidos.size()
-             << std::setw(12) << msMV
-             << std::setw(14) << resMV.iteraciones
-             << std::setw(14) << (ramMV >= 0 ? std::to_string(ramMV) : "N/D") << "\n";
+        if (timeoutMV) {
+            *out << std::left  << std::setw(32) << "  Max-Value (DAG)"
+                 << std::right << std::setw(14) << "TIMEOUT"
+                 << std::setw(14) << "TIMEOUT"
+                 << std::setw(12) << ">1800000"
+                 << std::setw(14) << "TIMEOUT"
+                 << std::setw(14) << "N/D" << "\n";
+        } else {
+            *out << std::left  << std::setw(32) << "  Max-Value (DAG)"
+                 << std::right << std::setw(14) << resMV.beneficioTotal
+                 << std::setw(14) << (int)resMV.bloquesExtraidos.size()
+                 << std::setw(12) << msMV
+                 << std::setw(14) << resMV.iteraciones
+                 << std::setw(14) << (ramMV >= 0 ? std::to_string(ramMV) : "N/D") << "\n";
+        }
  
-        *out << std::left  << std::setw(32) << "  Razon Valor/Tamano (DAG)"
-             << std::right << std::setw(14) << resRZ.beneficioTotal
-             << std::setw(14) << (int)resRZ.bloquesExtraidos.size()
-             << std::setw(12) << msRZ
-             << std::setw(14) << resRZ.iteraciones
-             << std::setw(14) << (ramRZ >= 0 ? std::to_string(ramRZ) : "N/D") << "\n";
+        if (timeoutRZ) {
+            *out << std::left  << std::setw(32) << "  Razon Valor/Tamano (DAG)"
+                 << std::right << std::setw(14) << "TIMEOUT"
+                 << std::setw(14) << "TIMEOUT"
+                 << std::setw(12) << ">1800000"
+                 << std::setw(14) << "TIMEOUT"
+                 << std::setw(14) << "N/D" << "\n";
+        } else {
+            *out << std::left  << std::setw(32) << "  Razon Valor/Tamano (DAG)"
+                 << std::right << std::setw(14) << resRZ.beneficioTotal
+                 << std::setw(14) << (int)resRZ.bloquesExtraidos.size()
+                 << std::setw(12) << msRZ
+                 << std::setw(14) << resRZ.iteraciones
+                 << std::setw(14) << (ramRZ >= 0 ? std::to_string(ramRZ) : "N/D") << "\n";
+        }
  
         separador(*out);
     }
@@ -130,20 +178,16 @@ int main() {
     for (auto* out : salidas) {
         *out << "====================================================================================================\n";
         *out << "  SUITE DE PRUEBAS - Grupo 01: Bezares / Briones / Bravo\n";
-        *out << "  Instancia: generarInstanciaEscalable (determinista)\n";
+        *out << "  Instancia: escenario00.txt (Formato Real CSV)\n";
         *out << "====================================================================================================\n";
     }
  
-    struct Escala { int X, Y, Z; const char* nombre; };
-    Escala escalas[] = {
-        {10, 10, 3, "Escala Pequena"},
-        {30, 30, 3, "Escala Mediana"},
-        {50, 50, 3, "Escala Grande" },
-    };
- 
-    for (auto& e : escalas) {
-        auto mat = generarInstanciaEscalable(e.X, e.Y, e.Z);
-        ejecutarEscala(e.nombre, e.X, e.Y, e.Z, mat, archivo);
+    int X = 0, Y = 0, Z = 0;
+    auto mat = leerInstanciaCSV("escenario00.txt", X, Y, Z);
+    if (!mat.empty()) {
+        ejecutarEscala("Escenario Real 00", X, Y, Z, mat, archivo);
+    } else {
+        std::cerr << "Error al cargar la instancia escenario00.txt\n";
     }
  
     for (auto* out : salidas) {

@@ -1,9 +1,21 @@
 #include "ExtractorConos.hpp"
 #include <chrono>
 #include <algorithm>
+#include <iostream>
+#include <iomanip>
+#include <stdexcept>
 
 ResultadoCono ExtractorConos::reconstruirConoRecursivo(int32_t x, int32_t y, int32_t z, const ModeloBloques& modelo)
 {
+    // Control de timeout cada 10000 llamadas recursivas
+    if (++total_llamadas_recursivas_ % 10000 == 0) {
+        auto ahora = std::chrono::high_resolution_clock::now();
+        double transcurrido = std::chrono::duration<double, std::milli>(ahora - tiempo_inicio_).count();
+        if (transcurrido > 1800000.0) {
+            throw std::runtime_error("Timeout");
+        }
+    }
+
     // Caso 1: bloque ya extraido
     if (modelo.estaExtraido(x, y, z)) {
         return ConjuntoCoordenadas{};
@@ -72,6 +84,8 @@ ResultadoExtraccion ExtractorConos::extraccionLineaBase(ModeloBloques& modelo) {
     bool hubo_extraccion = true;
     RegistroEjecucion registro;
     const auto tiempo_inicio = std::chrono::high_resolution_clock::now();
+    tiempo_inicio_ = tiempo_inicio;
+    total_llamadas_recursivas_ = 0;
     // Ciclo principal: continua mientras haya al menos una extraccion por iteracion.
     while (hubo_extraccion) {
         hubo_extraccion = false;
@@ -80,6 +94,33 @@ ResultadoExtraccion ExtractorConos::extraccionLineaBase(ModeloBloques& modelo) {
         for (int32_t x = 0; x < modelo.max_x; ++x) {
             for (int32_t y = 0; y < modelo.max_y; ++y) {
                 for (int32_t z = 0; z < modelo.max_z; ++z) {
+                    // Control de timeout y reporte de progreso
+                    static auto ultimo_print = std::chrono::high_resolution_clock::now();
+                    auto ahora = std::chrono::high_resolution_clock::now();
+                    double transcurrido = std::chrono::duration<double, std::milli>(ahora - tiempo_inicio_).count();
+                    if (transcurrido > 1800000.0) {
+                        throw std::runtime_error("Timeout");
+                    }
+                    if (std::chrono::duration<double, std::milli>(ahora - ultimo_print).count() >= 250.0) {
+                        ultimo_print = ahora;
+                        double total_celdas = static_cast<double>(modelo.max_x) * modelo.max_y * modelo.max_z;
+                        double actual_celdas = static_cast<double>(x) * modelo.max_y * modelo.max_z + y * modelo.max_z + z;
+                        double porcentaje = 100.0 * actual_celdas / total_celdas;
+                        
+                        int ancho_barra = 30;
+                        int completado = static_cast<int>(porcentaje * ancho_barra / 100.0);
+                        std::cout << "\r[First-Fit (Linea Base)] Progreso: [";
+                        for (int i = 0; i < ancho_barra; ++i) {
+                            if (i < completado) std::cout << "=";
+                            else if (i == completado) std::cout << ">";
+                            else std::cout << " ";
+                        }
+                        std::cout << "] " << std::fixed << std::setprecision(1) << porcentaje 
+                                  << "% (Iter: " << registro.iteraciones_totales 
+                                  << ", Extraídos: " << bloques_extraidos_totales.size()
+                                  << ", Tiempo: " << transcurrido / 1000.0 << "s)" << std::flush;
+                    }
+
                     // Saltar bloques ya extraidos
                     if (modelo.estaExtraido(x, y, z)) {
                         continue;
@@ -125,6 +166,10 @@ ResultadoExtraccion ExtractorConos::extraccionLineaBase(ModeloBloques& modelo) {
             }
         }
     }
+
+    std::cout << "\r[First-Fit (Linea Base)] Completado! (Tiempo: " 
+              << std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - tiempo_inicio_).count() / 1000.0 
+              << "s)                                                                       \n" << std::flush;
 
     const auto tiempo_fin = std::chrono::high_resolution_clock::now();
     const double tiempo_ms = std::chrono::duration<double, std::milli>(

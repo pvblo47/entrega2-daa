@@ -16,4 +16,22 @@ struct Bloque {
     bool reportadoCero;  // true si ya se registro como cono de valor 0
 
     EstatusBorde estatusBorde;
+
+    // Nuevas variables (Requisito 3)
+    double tonelada;
+    double metal1;
+    double metal2;
+    int roca;
+    double valorBloque;
+
+    // Constructor por defecto
+    Bloque() : id(-1), x(-1), y(-1), z(-1), valor(0.0), activo(true), reportadoCero(false),
+               estatusBorde(EstatusBorde::VALIDO), tonelada(0.0), metal1(0.0), metal2(0.0),
+               roca(0), valorBloque(0.0) {}
+
+    // Metodo para calcular valorBloque automaticamente (Requisito 4 & 5)
+    void calcularValor() {
+        valorBloque = (metal1 * 0.89 * 13228.0) - (tonelada * 13.0) - (tonelada * 25.0);
+        valor = valorBloque;
+    }
 };

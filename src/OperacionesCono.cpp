@@ -1,6 +1,7 @@
 #include "OperacionesCono.h"
 #include <queue>
 #include <vector>
+#include <stdexcept>
 
 // ---------------------------------------------------------------------------
 // calcularCierreCono: Subrutina 2.4.3 - BFS con control de visitados
@@ -47,6 +48,7 @@ std::vector<int> calcularCierreCono(int idOrigen, const GrafoDAG& grafo) {
 // ---------------------------------------------------------------------------
 // sumarValoresEconomicos
 // ---------------------------------------------------------------------------
+// Suma los valores economicos de un conjunto de bloques (ids)
 double sumarValoresEconomicos(const std::vector<int>& ids, const GrafoDAG& grafo) {
     double suma = 0.0;
     for (int id : ids) {
@@ -66,7 +68,8 @@ void actualizarDescendientesDinamico(
     const std::vector<int>& conoRemovido,
     GrafoDAG& grafo,
     std::vector<double>& valoresConos,
-    std::vector<int>& tamanosConos)
+    std::vector<int>& tamanosConos,
+    std::chrono::high_resolution_clock::time_point tiempo_inicio)
 {
     const int total = grafo.totalNodos();
     std::vector<bool> visitados(total, false);
@@ -100,7 +103,17 @@ void actualizarDescendientesDinamico(
     }
 
     // --- Fase 2: Recalculo exclusivo confinado a la zona de impacto D ---
+    int conteo_afectados = 0;
     for (int dId : descendientesAfectados) {
+        // Control de timeout
+        if (++conteo_afectados % 100 == 0) {
+            auto ahora = std::chrono::high_resolution_clock::now();
+            double transcurrido = std::chrono::duration<double, std::milli>(ahora - tiempo_inicio).count();
+            if (transcurrido > 1800000.0) {
+                throw std::runtime_error("Timeout");
+            }
+        }
+
         Bloque& d = grafo.obtenerNodo(dId);
         if (d.estatusBorde == EstatusBorde::VALIDO) {
             std::vector<int> nuevoCono = calcularCierreCono(dId, grafo);
