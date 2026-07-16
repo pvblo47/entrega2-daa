@@ -40,3 +40,9 @@ using ConjuntoCoordenadas = std::unordered_set<Coord3D, Coord3DHash>;
 
 // Sentinel para indicar que un bloque es INEXTRAIBLE.
 using ResultadoCono = std::optional<ConjuntoCoordenadas>;
+
+// Tolerancia para comparaciones de valores economicos en punto flotante.
+// Un cono con |V(C)| <= EPSILON_VALOR se clasifica como cono de valor cero
+// (se reporta, no se extrae). Un cono es positivo si V(C) > EPSILON_VALOR.
+// Supuesto declarado en las Secciones 2.5.1 y 3.3.2 del informe.
+inline constexpr double EPSILON_VALOR = 1e-6;

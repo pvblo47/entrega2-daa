@@ -1,5 +1,6 @@
 #include "Extraccion.h"
 #include "OperacionesCono.h"
+#include "../linea_base/types.hpp"
 #include <limits>
 #include <iostream>
 #include <chrono>
@@ -107,13 +108,13 @@ ResultadoExtraccionDAG extraccionOptimizadaDAG(GrafoDAG& grafo, TipoPolitica pol
         for (const Bloque& b : grafo.nodos()) {
 
             // Monitoreo de conos con valor cero (reporte obligatorio)
-            if (b.activo && valoresConos[b.id] == 0.0 && !b.reportadoCero) {
+            if (b.activo && std::abs(valoresConos[b.id]) <= EPSILON_VALOR && !b.reportadoCero) {
                 grafo.obtenerNodo(b.id).reportadoCero = true;
                 resultado.casosConosCero++;
             }
 
             // Filtro: solo bloques activos con cono rentable
-            if (!b.activo || valoresConos[b.id] <= 0.0) {
+            if (!b.activo || valoresConos[b.id] <= EPSILON_VALOR) {
                 continue;
             }
 

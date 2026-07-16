@@ -135,8 +135,8 @@ ResultadoExtraccion ExtractorConos::extraccionLineaBase(ModeloBloques& modelo) {
                     // Calcular valor economico del cono
                     const double valor_cono = calcularValorEconomico(
                         cono_candidato.value(), modelo);
-                    // Politica First-Fit: primer cono con V(C) > 0
-                    if (valor_cono > 0.0) {
+                    // Politica First-Fit: primer cono con V(C) > EPSILON_VALOR
+                    if (valor_cono > EPSILON_VALOR) {
                         beneficio_total += valor_cono;
                         // Union sin duplicados: E <- E ∪ C
                         for (const Coord3D& b : cono_candidato.value()) {
@@ -148,7 +148,7 @@ ResultadoExtraccion ExtractorConos::extraccionLineaBase(ModeloBloques& modelo) {
                         ++registro.conos_extraidos;
                         // Interrumpir escaneo y reiniciar
                         break;
-                    } else if (valor_cono == 0.0) {
+                    } else if (std::abs(valor_cono) <= EPSILON_VALOR) {
                         // Caso limite: cono de valor cero
                         registro.conos_nulos.push_back(RegistroConoNulo{
                             Coord3D{x, y, z},
