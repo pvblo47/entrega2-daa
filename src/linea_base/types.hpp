@@ -45,4 +45,7 @@ using ResultadoCono = std::optional<ConjuntoCoordenadas>;
 // Un cono con |V(C)| <= EPSILON_VALOR se clasifica como cono de valor cero
 // (se reporta, no se extrae). Un cono es positivo si V(C) > EPSILON_VALOR.
 // Supuesto declarado en las Secciones 2.5.1 y 3.3.2 del informe.
+#ifndef EPSILON_VALOR_DEFINED
+#define EPSILON_VALOR_DEFINED
 inline constexpr double EPSILON_VALOR = 1e-6;
+#endif

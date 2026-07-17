@@ -10,6 +10,7 @@ struct BloqueDatos {
     double metal2 = 0.0;
     int roca = 0;
     double valorBloque = 0.0;
+    bool existe = true;  // false si la celda esta vacia (topografia irregular)
 
     void calcularValor() {
         valorBloque = (metal1 * 0.89 * 13228.0) - (tonelada * 13.0) - (tonelada * 25.0);

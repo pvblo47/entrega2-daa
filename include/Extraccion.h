@@ -1,5 +1,14 @@
 #pragma once
 
+// Tolerancia para comparaciones de valores economicos en punto flotante.
+// Un cono con |V(C)| <= EPSILON_VALOR se clasifica como cono de valor cero.
+// Supuesto declarado en Seccion 3.3.2 del informe.
+#ifndef EPSILON_VALOR_DEFINED
+#define EPSILON_VALOR_DEFINED
+inline constexpr double EPSILON_VALOR = 1e-6;
+#endif
+
+
 #include "GrafoDAG.h"
 #include <vector>
 #include <string>

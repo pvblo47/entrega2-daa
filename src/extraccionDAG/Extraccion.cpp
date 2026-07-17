@@ -1,6 +1,5 @@
 #include "Extraccion.h"
 #include "OperacionesCono.h"
-#include "../linea_base/types.hpp"
 #include <limits>
 #include <iostream>
 #include <chrono>

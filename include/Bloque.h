@@ -24,10 +24,12 @@ struct Bloque {
     int roca;
     double valorBloque;
 
+    bool existe;         // false si la celda es vacia (topografia irregular)
+
     // Constructor por defecto
     Bloque() : id(-1), x(-1), y(-1), z(-1), valor(0.0), activo(true), reportadoCero(false),
                estatusBorde(EstatusBorde::VALIDO), tonelada(0.0), metal1(0.0), metal2(0.0),
-               roca(0), valorBloque(0.0) {}
+               roca(0), valorBloque(0.0), existe(true) {}
 
     // Metodo para calcular valorBloque automaticamente (Requisito 4 & 5)
     void calcularValor() {

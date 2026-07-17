@@ -35,6 +35,7 @@ GrafoDAG::GrafoDAG(int X, int Y, int Z,
                 b.roca          = matrizValores[x][y][z].roca;
                 b.valorBloque   = matrizValores[x][y][z].valorBloque;
                 b.valor         = b.valorBloque;
+                b.existe        = matrizValores[x][y][z].existe;
 
                 _nodos[contadorId] = b;
                 ++contadorId;
@@ -58,14 +59,19 @@ GrafoDAG::GrafoDAG(int X, int Y, int Z,
                 int ny = b.y + j;
                 int nz = b.z + 1;
 
-                if (nx >= 0 && nx < X && ny >= 0 && ny < Y) {
-                    // Predecesor valido dentro de los limites
+                if (nx < 0 || nx >= X || ny < 0 || ny >= Y) {
+                    // Caso (a): Predecesor fuera de los limites del modelo
+                    // → bloque INEXTRAIBLE permanente (Seccion 2.3.3)
+                    b.estatusBorde = EstatusBorde::INEXTRAIBLE;
+                } else if (!_nodos[coordAId(nx, ny, nz)].existe) {
+                    // Caso (b): Posicion dentro de los limites pero celda vacia
+                    // → precedencia satisfecha, no genera arco (Seccion 3.3.1)
+                    // (el escenario00.txt es una caja completa, este caso no ocurre en E2)
+                } else {
+                    // Caso (c): Predecesor valido con bloque existente → genera arco
                     int idPred = coordAId(nx, ny, nz);
                     _pred[id].push_back(idPred);
                     _suc[idPred].push_back(id);
-                } else {
-                    // Predecesor fuera del modelo: marcado permanente como INEXTRAIBLE
-                    b.estatusBorde = EstatusBorde::INEXTRAIBLE;
                 }
             }
         }
