@@ -192,11 +192,11 @@ int main() {
         *out << "\n  [2/4] Escenario real (escenario00.txt)\n";
 
     int X = 0, Y = 0, Z = 0;
-    auto mat = leerInstanciaCSV("escenario00.txt", X, Y, Z);
+    auto mat = leerInstanciaCSV("data/escenario00.txt", X, Y, Z);
     if (!mat.empty()) {
         ejecutarEscala("Escenario Real 00", X, Y, Z, mat, archivo);
     } else {
-        std::cerr << "Error: no se pudo cargar escenario00.txt\n";
+        std::cerr << "Error: no se pudo cargar data/escenario00.txt\n";
     }
 
     for (auto* out : salidas) {
