@@ -7,13 +7,18 @@
 // Modelo tridimensional del yacimiento minero.
 class ModeloBloques {
 public:
-    const int32_t max_x; // Numero de bloques en eje X (columnas)
-    const int32_t max_y; // Numero de bloques en eje Y (filas)
-    const int32_t max_z; // Numero de bloques en eje Z (niveles)
+    // Numero de bloques en eje X (columnas)
+    const int32_t max_x;
+    // Numero de bloques en eje Y (filas)
+    const int32_t max_y;
+    // Numero de bloques en eje Z (niveles)
+    const int32_t max_z;
 
 private:
-    std::vector<double> valores_;  // Valores economicos v(b)
-    std::vector<bool> extraido_;   // Estado de extraccion por bloque
+    // Valores economicos v(b)
+    std::vector<double> valores_;
+    // Estado de extraccion por bloque
+    std::vector<bool> extraido_;
 
     // Traduce coordenadas 3D a indice lineal.
     [[nodiscard]] std::size_t idx(int32_t x, int32_t y, int32_t z) const noexcept;

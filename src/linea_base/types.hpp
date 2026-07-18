@@ -8,11 +8,9 @@
 // Coordenada 3D de un bloque en el yacimiento.
 struct Coord3D {
     int32_t x, y, z;
-
     bool operator==(const Coord3D& other) const noexcept {
         return x == other.x && y == other.y && z == other.z;
     }
-
     bool operator<(const Coord3D& other) const noexcept {
         if (x != other.x) return x < other.x;
         if (y != other.y) return y < other.y;
@@ -25,8 +23,7 @@ struct Coord3DHash {
     std::size_t operator()(const Coord3D& c) const noexcept {
         std::size_t seed = 0;
         auto hash_combine = [&](int32_t v) {
-            seed ^= static_cast<std::size_t>(v + 0x9e3779b9)
-                    + (seed << 6) + (seed >> 2);
+            seed ^= static_cast<std::size_t>(v + 0x9e3779b9) + (seed << 6) + (seed >> 2);
         };
         hash_combine(c.x);
         hash_combine(c.y);

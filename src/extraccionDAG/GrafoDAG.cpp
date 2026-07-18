@@ -24,7 +24,10 @@ GrafoDAG::GrafoDAG(int X, int Y, int Z,
                 b.x             = x;
                 b.y             = y;
                 b.z             = z;
-                b.activo        = true;
+                // activo = existe: una celda sin bloque (Requisito D1) queda
+                // permanentemente inerte: nunca raiz, nunca sumada al beneficio
+                // ni al tamano de un cono (Seccion 2.1.1 / 2.5.2).
+                b.activo        = matrizValores[x][y][z].existe;
                 b.reportadoCero = false;
                 b.estatusBorde  = EstatusBorde::VALIDO;
 
@@ -49,7 +52,12 @@ GrafoDAG::GrafoDAG(int X, int Y, int Z,
 
         // Bloques de la capa superior (z = Z-1) son superficie: no tienen predecesores
         if (b.z + 1 >= Z) {
-            continue; // caso base: bloque de superficie, valido sin predecesores
+            continue; // caso base: fuera de limites, superficie por borde
+        }
+        // Superficie por existencia (Seccion 2.5.2): si no hay bloque
+        // directamente encima, b tampoco requiere predecesores.
+        if (!_nodos[coordAId(b.x, b.y, b.z + 1)].existe) {
+            continue;
         }
 
         // Verificar los 9 predecesores inmediatos en nivel z+1

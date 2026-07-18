@@ -39,9 +39,7 @@ void ModeloBloques::marcarExtraido(int32_t x, int32_t y, int32_t z) noexcept {
 
 // Verifica si una coordenada esta dentro de los limites del modelo.
 bool ModeloBloques::dentroLimites(int32_t x, int32_t y, int32_t z) const noexcept {
-    return (x >= 0 && x < max_x)
-        && (y >= 0 && y < max_y)
-        && (z >= 0 && z < max_z);
+    return (x >= 0 && x < max_x) && (y >= 0 && y < max_y) && (z >= 0 && z < max_z);
 }
 
 // Verifica si un bloque es de superficie.

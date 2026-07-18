@@ -28,18 +28,14 @@ void imprimirReporte(
 
     // Dimensiones del modelo
     std::cout << "\n[MODELO]\n";
-    std::cout << "  Dimensiones:         " << mx << " x " << my << " x " << mz
-              << "  (" << (static_cast<long long>(mx)*my*mz) << " bloques totales)\n";
+    std::cout << "  Dimensiones:         " << mx << " x " << my << " x " << mz << "  (" << (static_cast<long long>(mx)*my*mz) << " bloques totales)\n";
 
     // Metricas de ejecucion
     std::cout << "\n[METRICAS DE RENDIMIENTO]\n";
     std::cout << "  Tiempo de ejecucion: " << resultado.tiempo_ms << " ms\n";
-    std::cout << "  Iteraciones (ciclos while): "
-              << resultado.registro.iteraciones_totales << '\n';
-    std::cout << "  Conos positivos extraidos:  "
-              << resultado.registro.conos_extraidos << '\n';
-    std::cout << "  Bloques inextraibles (borde): "
-              << resultado.registro.bloques_inextraibles << '\n';
+    std::cout << "  Iteraciones (ciclos while): " << resultado.registro.iteraciones_totales << '\n';
+    std::cout << "  Conos positivos extraidos:  " << resultado.registro.conos_extraidos << '\n';
+    std::cout << "  Bloques inextraibles (borde): " << resultado.registro.bloques_inextraibles << '\n';
 
     // Valor total extraido
     std::cout << "\n[RESULTADO ECONOMICO]\n";
@@ -82,16 +78,10 @@ void imprimirReporte(
         std::cout << "  No se detectaron conos con valor exactamente cero.\n";
     } else {
         std::cout << "  Accion: detectados pero NO extraidos (sin beneficio).\n";
-        std::cout << "  Cantidad de conos nulos: "
-                  << resultado.registro.conos_nulos.size() << '\n';
+        std::cout << "  Cantidad de conos nulos: " << resultado.registro.conos_nulos.size() << '\n';
         std::cout << "  Detalle:\n";
         for (const auto& reg : resultado.registro.conos_nulos) {
-            std::cout << "    Bloque raiz: ("
-                      << reg.bloque_raiz.x << ","
-                      << reg.bloque_raiz.y << ","
-                      << reg.bloque_raiz.z << ")"
-                      << " | Tamaño cono: " << reg.tamano_cono
-                      << " | V(C): " << reg.valor << '\n';
+            std::cout << "    Bloque raiz: (" << reg.bloque_raiz.x << "," << reg.bloque_raiz.y << "," << reg.bloque_raiz.z << ") | Tamaño cono: " << reg.tamano_cono << " | V(C): " << reg.valor << '\n';
         }
     }
 

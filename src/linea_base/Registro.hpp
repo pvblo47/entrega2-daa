@@ -6,15 +6,22 @@
 
 // Registro de un cono con valor igual a cero (caso limite).
 struct RegistroConoNulo {
-    Coord3D bloque_raiz;     // Bloque base del cono
-    std::size_t tamano_cono; // Cantidad de bloques en el cono
-    double valor;            // Siempre 0.0 en este registro
+    // Bloque base del cono
+    Coord3D bloque_raiz;
+    // Cantidad de bloques en el cono
+    std::size_t tamano_cono;
+    // Siempre 0.0 en este registro
+    double valor;
 };
 
 // Acumula todos los eventos de la ejecucion para reporte final.
 struct RegistroEjecucion {
-    std::vector<RegistroConoNulo> conos_nulos;  // Conos con V(C) == 0
-    std::size_t iteraciones_totales = 0;        // Numero de ciclos del While
-    std::size_t conos_extraidos = 0;            // Conos con V(C) > 0 extraidos
-    std::size_t bloques_inextraibles = 0;       // Bloques descartados por borde
+    // Conos con V(C) == 0
+    std::vector<RegistroConoNulo> conos_nulos;
+    // Numero de ciclos del While
+    std::size_t iteraciones_totales = 0;
+    // Conos con V(C) > 0 extraidos
+    std::size_t conos_extraidos = 0;
+    // Bloques descartados por borde
+    std::size_t bloques_inextraibles = 0;
 };

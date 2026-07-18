@@ -7,3 +7,4 @@ suite.exe
 resultados_pruebas.txt
 build/
 *.o
+src/linea_base/*.exe
